@@ -6,7 +6,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -17,10 +16,11 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.finan.MyBatchApp.beans.StudentBean;
@@ -28,15 +28,15 @@ import com.finan.MyBatchApp.crudrepo.StudentRepository;
 import com.finan.MyBatchApp.entity.StudentEntity;
 
 @Configuration
-@EnableBatchProcessing
 public class MyJobConfig extends DefaultBatchConfiguration{
 
 	@Autowired
-	StudentRepository studentRepository;
+	private StudentRepository studentRepository;
 	
 	private static Logger logger = LogManager.getLogger(MyJobConfig.class);
 	
-	private ClassPathResource jsonResource = new ClassPathResource("student.json");
+	private String path = "src/main/java/com/finan/MyBatchApp/student.json";
+	private FileSystemResource jsonResource = new FileSystemResource(path);
 	
 	@Bean
 	public Job job(JobRepository jobRepository, Step step1) {
@@ -83,13 +83,7 @@ public class MyJobConfig extends DefaultBatchConfiguration{
 	private ItemProcessor<StudentBean, StudentEntity> itemProcessor() {
 		return (bean)->{
 			StudentEntity entity = new StudentEntity();
-			entity.setId(bean.getId());
-			entity.setAddress(bean.getAddress());
-			entity.setClassString(bean.getClassString());
-			entity.setDivision(bean.getDivision());
-			entity.setFee(bean.getFee());
-			entity.setName(bean.getName());
-			logger.info("entity created for bean");
+			BeanUtils.copyProperties(bean, entity);
 			return entity;
 		};
 	}

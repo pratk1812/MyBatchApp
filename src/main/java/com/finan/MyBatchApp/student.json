@@ -1,5 +1,4 @@
-{
-  "StudentList" : [ {
+[ {
     "Name" : "Juli Tebbutt",
     "Class" : "4",
     "Division" : "A",
@@ -7000,4 +6999,3 @@
     "Address" : "Alofi ,913441-148",
     "Fee" : "746000"
   } ]
-}
