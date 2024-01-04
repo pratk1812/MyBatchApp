@@ -60,7 +60,6 @@ public class StudentEntity {
 	}
 	@Override
 	public String toString() {
-		return "StudentEntity [id=" + id + ", name=" + name + ", classString=" + classString + ", division=" + division
-				+ ", address=" + address + ", fee=" + fee + "]";
+		return Format.entityString(this);
 	}
 }

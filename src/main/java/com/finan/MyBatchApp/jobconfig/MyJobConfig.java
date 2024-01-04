@@ -39,8 +39,8 @@ public class MyJobConfig extends DefaultBatchConfiguration{
 	private FileSystemResource jsonResource = new FileSystemResource(path);
 	
 	@Bean
-	public Job job(JobRepository jobRepository, Step step1) {
-		return new JobBuilder("MyJob", jobRepository)
+	public Job myJob(JobRepository jobRepository, Step step1) {
+		return new JobBuilder("myJob", jobRepository)
 				.incrementer(new RunIdIncrementer())
 				.start(step1)
 				.build();
@@ -50,6 +50,7 @@ public class MyJobConfig extends DefaultBatchConfiguration{
 	public Step step(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
 		return new StepBuilder("step1", jobRepository)
 				.<StudentBean, StudentEntity>chunk(10, transactionManager)
+				.allowStartIfComplete(true)
 				.listener(myListener())
 				.reader(itemReader())
 				.processor(itemProcessor())
@@ -74,6 +75,7 @@ public class MyJobConfig extends DefaultBatchConfiguration{
 	}
 
 	private ItemWriter<StudentEntity> itemWriter() {
+		logger.info("is repo1 null :: " + studentRepository!=null);
 		return chunk->{
 			logger.info("Saving chunk in database");
 			studentRepository.saveAll(chunk);
